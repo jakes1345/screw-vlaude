@@ -385,3 +385,72 @@ class AgentEngine {
 }
 
 module.exports = { AgentEngine, TOOLS };
+
+// Groq agentic loop (added)
+AgentEngine.prototype.runGroq = async function(model, systemPrompt, userMessage, onEvent) {
+  const Groq = require('groq-sdk');
+  const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+  // Convert tools to OpenAI format for Groq
+  const groqTools = TOOLS.map(t => ({
+    type: 'function',
+    function: {
+      name: t.name,
+      description: t.description,
+      parameters: t.input_schema
+    }
+  }));
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userMessage }
+  ];
+
+  let iterations = 0;
+
+  while (iterations < this.maxIterations) {
+    iterations++;
+    onEvent({ type: 'thinking', iteration: iterations });
+
+    const response = await client.chat.completions.create({
+      model,
+      messages,
+      tools: groqTools,
+      tool_choice: 'auto',
+      max_tokens: 8192,
+    });
+
+    const msg = response.choices[0].message;
+
+    if (msg.content) {
+      onEvent({ type: 'text', text: msg.content });
+    }
+
+    if (!msg.tool_calls || msg.tool_calls.length === 0) {
+      onEvent({ type: 'done', iterations });
+      break;
+    }
+
+    messages.push(msg);
+
+    for (const toolCall of msg.tool_calls) {
+      const name = toolCall.function.name;
+      let input = {};
+      try { input = JSON.parse(toolCall.function.arguments); } catch {}
+
+      onEvent({ type: 'tool_call', tool: name, input });
+      const result = await this.executeTool(name, input);
+      onEvent({ type: 'tool_result', tool: name, result });
+
+      messages.push({
+        role: 'tool',
+        tool_call_id: toolCall.id,
+        content: JSON.stringify(result)
+      });
+    }
+  }
+
+  if (iterations >= this.maxIterations) {
+    onEvent({ type: 'max_iterations', iterations });
+  }
+};

@@ -7,6 +7,9 @@ const AGENT_MODELS = [
   { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', icon: '💎', provider: 'google' },
   { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', icon: '🚀', provider: 'google' },
   { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', icon: '💎', provider: 'google' },
+  { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)', icon: '🦙', provider: 'groq' },
+  { id: 'llama-3.1-70b-versatile', name: 'Llama 3.1 70B (Groq)', icon: '🦙', provider: 'groq' },
+  { id: 'deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B (Groq)', icon: '🧠', provider: 'groq' },
 ];
 
 const PRESET_TASKS = [

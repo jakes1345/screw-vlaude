@@ -439,10 +439,13 @@ Be thorough. Use tools liberally. Don't ask for clarification — make reasonabl
   try {
     const ANTHROPIC_MODELS = ['claude-opus-4-6', 'claude-sonnet-4-6', 'claude-sonnet-4-20250514', 'claude-haiku-4-5-20251001'];
     const GOOGLE_MODELS = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'];
+    const GROQ_AGENT_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'deepseek-r1-distill-llama-70b'];
 
     if (ANTHROPIC_MODELS.includes(model)) {
       const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       await agentEngine.runAnthropic(client, model, AGENT_SYSTEM, message, send);
+    } else if (GROQ_AGENT_MODELS.includes(model)) {
+      await agentEngine.runGroq(model, AGENT_SYSTEM, message, send);
     } else if (GOOGLE_MODELS.includes(model)) {
       await agentEngine.runGoogle(model, AGENT_SYSTEM, message, send);
     } else {

@@ -104,3 +104,14 @@ class TokenTracker {
 }
 
 module.exports = { TokenTracker, MODEL_COSTS };
+
+// Add Groq models to MODEL_COSTS at runtime
+const GROQ_COSTS = {
+  'llama-3.3-70b-versatile': { input: 0.59, output: 0.79, name: 'Llama 3.3 70B (Groq)' },
+  'llama-3.1-70b-versatile': { input: 0.59, output: 0.79, name: 'Llama 3.1 70B (Groq)' },
+  'llama-3.1-8b-instant': { input: 0.05, output: 0.08, name: 'Llama 3.1 8B (Groq)' },
+  'mixtral-8x7b-32768': { input: 0.24, output: 0.24, name: 'Mixtral 8x7B (Groq)' },
+  'gemma2-9b-it': { input: 0.20, output: 0.20, name: 'Gemma2 9B (Groq)' },
+  'deepseek-r1-distill-llama-70b': { input: 0.75, output: 0.99, name: 'DeepSeek R1 70B (Groq)' },
+};
+Object.assign(MODEL_COSTS, GROQ_COSTS);

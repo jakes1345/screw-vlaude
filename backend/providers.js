@@ -1,9 +1,11 @@
 require('dotenv').config();
 const Anthropic = require('@anthropic-ai/sdk');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
 
 let anthropicClient = null;
 let googleClient = null;
+let groqClient = null;
 
 function getAnthropicClient() {
   if (!anthropicClient && process.env.ANTHROPIC_API_KEY) {
@@ -18,6 +20,22 @@ function getGoogleClient() {
   }
   return googleClient;
 }
+
+function getGroqClient() {
+  if (!groqClient && process.env.GROQ_API_KEY) {
+    groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  }
+  return groqClient;
+}
+
+const GROQ_MODELS = [
+  'llama-3.3-70b-versatile',
+  'llama-3.1-70b-versatile',
+  'llama-3.1-8b-instant',
+  'mixtral-8x7b-32768',
+  'gemma2-9b-it',
+  'deepseek-r1-distill-llama-70b',
+];
 
 const ANTHROPIC_MODELS = [
   'claude-opus-4-6',
@@ -180,8 +198,48 @@ async function callLocalModel(messages, systemPrompt, stream, onChunk) {
   }
 }
 
+async function callGroq(model, messages, systemPrompt, stream, onChunk) {
+  const client = getGroqClient();
+  if (!client) throw new Error('Groq API key not configured');
+
+  const params = {
+    model,
+    max_tokens: 8192,
+    messages: [
+      ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
+      ...messages
+    ],
+    stream,
+  };
+
+  if (stream) {
+    let fullText = '';
+    const streamResp = await client.chat.completions.create(params);
+    for await (const chunk of streamResp) {
+      const delta = chunk.choices[0]?.delta?.content || '';
+      if (delta) {
+        fullText += delta;
+        if (onChunk) onChunk(delta);
+      }
+    }
+    const inputTokens = Math.ceil(messages.map(m => m.content).join('').length / 4);
+    const outputTokens = Math.ceil(fullText.length / 4);
+    return { text: fullText, inputTokens, outputTokens };
+  } else {
+    const resp = await client.chat.completions.create(params);
+    const text = resp.choices[0].message.content;
+    return {
+      text,
+      inputTokens: resp.usage?.prompt_tokens || 0,
+      outputTokens: resp.usage?.completion_tokens || 0
+    };
+  }
+}
+
 async function routeToProvider(model, messages, systemPrompt, stream = false, onChunk = null) {
-  if (model === 'local') {
+  if (GROQ_MODELS.includes(model)) {
+    return callGroq(model, messages, systemPrompt, stream, onChunk);
+  } else if (model === 'local') {
     return callLocalModel(messages, systemPrompt, stream, onChunk);
   } else if (ANTHROPIC_MODELS.includes(model)) {
     return callAnthropic(model, messages, systemPrompt, stream, onChunk);
@@ -196,8 +254,9 @@ function getAvailableProviders() {
   return {
     anthropic: !!process.env.ANTHROPIC_API_KEY,
     google: !!process.env.GOOGLE_API_KEY,
+    groq: !!process.env.GROQ_API_KEY,
     local: true // always try
   };
 }
 
-module.exports = { routeToProvider, getAvailableProviders, ANTHROPIC_MODELS, GOOGLE_MODELS };
+module.exports = { routeToProvider, getAvailableProviders, ANTHROPIC_MODELS, GOOGLE_MODELS, GROQ_MODELS };

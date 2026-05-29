@@ -10,6 +10,11 @@ const MODELS = [
   { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'google', icon: '⚡' },
   { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'google', icon: '🚀' },
   { id: 'local', name: 'Local Model (Free)', provider: 'local', icon: '🖥' },
+  { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)', provider: 'groq', icon: '🦙' },
+  { id: 'llama-3.1-70b-versatile', name: 'Llama 3.1 70B (Groq)', provider: 'groq', icon: '🦙' },
+  { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B Instant (Groq)', provider: 'groq', icon: '⚡' },
+  { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B (Groq)', provider: 'groq', icon: '🌀' },
+  { id: 'deepseek-r1-distill-llama-70b', name: 'DeepSeek R1 70B (Groq)', provider: 'groq', icon: '🧠' },
 ];
 
 const SYSTEM_PROMPTS = {
