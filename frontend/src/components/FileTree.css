@@ -1,0 +1,129 @@
+.file-tree {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.file-tree__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.file-tree__refresh {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+  transition: color 0.15s;
+}
+.file-tree__refresh:hover { color: var(--accent); }
+
+.file-tree__loading {
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.file-tree__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-1);
+  transition: background 0.1s, color 0.1s;
+  user-select: none;
+}
+.tree-node:hover { background: var(--bg-3); color: var(--text-0); }
+.tree-node--active { background: rgba(0, 212, 255, 0.1) !important; color: var(--accent) !important; }
+
+.tree-node__arrow {
+  font-size: 10px;
+  color: var(--text-2);
+  width: 12px;
+  flex-shrink: 0;
+}
+.tree-node__icon {
+  font-size: 12px;
+  width: 16px;
+  flex-shrink: 0;
+}
+.tree-node__folder {
+  font-size: 12px;
+  width: 16px;
+  flex-shrink: 0;
+}
+.tree-node__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.tree-node__name--dirty { color: var(--warn); }
+.tree-node__name--binary { opacity: 0.5; }
+.tree-node__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--warn);
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.tree-loading {
+  padding: 4px 24px;
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+/* Context menu */
+.context-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.context-menu {
+  position: fixed;
+  background: var(--bg-3);
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  padding: 4px 0;
+  z-index: 1000;
+  min-width: 140px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.context-item {
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text-1);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.context-item:hover { background: var(--bg-4); color: var(--text-0); }
+.context-item--danger:hover { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+.context-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}

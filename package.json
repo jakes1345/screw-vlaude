@@ -1,0 +1,13 @@
+{
+  "name": "screw-claude",
+  "version": "1.0.0",
+  "description": "Multi-provider AI IDE - Claude, Gemini, Local models",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "npm run build && cd backend && npm start"
+  }
+}

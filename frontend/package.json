@@ -1,0 +1,42 @@
+{
+  "name": "screw-claude-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@codemirror/autocomplete": "^6.18.0",
+    "@codemirror/commands": "^6.7.1",
+    "@codemirror/lang-cpp": "^6.0.2",
+    "@codemirror/lang-css": "^6.3.0",
+    "@codemirror/lang-html": "^6.4.9",
+    "@codemirror/lang-java": "^6.0.1",
+    "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/lang-markdown": "^6.3.1",
+    "@codemirror/lang-php": "^6.0.1",
+    "@codemirror/lang-python": "^6.1.6",
+    "@codemirror/lang-rust": "^6.0.1",
+    "@codemirror/lang-sql": "^6.8.0",
+    "@codemirror/language": "^6.10.3",
+    "@codemirror/search": "^6.5.6",
+    "@codemirror/state": "^6.4.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@codemirror/view": "^6.35.0",
+    "@uiw/react-codemirror": "^4.23.6",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/xterm": "^5.5.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-scripts": "5.0.1",
+    "socket.io-client": "^4.7.5"
+  },
+  "scripts": {
+    "start": "PORT=3000 react-scripts start",
+    "build": "react-scripts build"
+  },
+  "proxy": "http://localhost:3001",
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version"]
+  }
+}
