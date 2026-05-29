@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import FileTree from './components/FileTree';
 import Editor from './components/Editor';
 import AIPanel from './components/AIPanel';
+import AgentPanel from './components/AgentPanel';
 import Terminal from './components/Terminal';
 import GitPanel from './components/GitPanel';
 import StatusBar from './components/StatusBar';
@@ -281,6 +282,7 @@ export default function App() {
               <div className="bottom-panel__tabs">
                 <button className={bottomPanel === 'terminal' ? 'active' : ''} onClick={() => setBottomPanel('terminal')}>TERMINAL</button>
                 <button className={bottomPanel === 'ai' ? 'active' : ''} onClick={() => setBottomPanel('ai')}>AI CHAT</button>
+                <button className={bottomPanel === 'agent' ? 'active' : ''} onClick={() => setBottomPanel('agent')}>⚡ AGENT</button>
                 <button className="bottom-panel__close" onClick={() => setShowBottom(false)}>✕</button>
               </div>
               {bottomPanel === 'terminal' && (
@@ -300,6 +302,9 @@ export default function App() {
                   onTokenUpdate={setTokenStats}
                   notify={notify}
                 />
+              )}
+              {bottomPanel === 'agent' && (
+                <AgentPanel notify={notify} workspace={workspace} />
               )}
             </div>
           )}

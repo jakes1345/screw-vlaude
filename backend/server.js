@@ -10,6 +10,8 @@ const { TokenTracker } = require('./tokenTracker');
 const FileManager = require('./fileManager');
 const GitManager = require('./gitManager');
 const TerminalManager = require('./terminalManager');
+const { AgentEngine } = require('./agentEngine');
+const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +28,7 @@ const workspaceRoot = process.env.WORKSPACE_ROOT || process.env.HOME + '/workspa
 const fileManager = new FileManager(workspaceRoot);
 const gitManager = new GitManager(workspaceRoot);
 const terminalManager = new TerminalManager();
+const agentEngine = new AgentEngine(workspaceRoot);
 
 // ─── Health / Status ────────────────────────────────────────────────────────
 app.get('/api/status', (req, res) => {
@@ -211,6 +214,7 @@ app.post('/api/workspace', (req, res) => {
   const { path: newPath } = req.body;
   fileManager.setWorkspaceRoot(newPath);
   gitManager.updateRoot(newPath);
+  agentEngine.setWorkspaceRoot(newPath);
   res.json({ success: true, workspace: newPath });
 });
 
@@ -405,4 +409,48 @@ server.listen(PORT, () => {
 process.on('SIGINT', () => {
   terminalManager.destroyAll();
   process.exit(0);
+});
+
+// ─── Agent endpoint (SSE streaming) ──────────────────────────────────────────
+app.post('/api/agent', async (req, res) => {
+  const { model, message, systemPrompt, mode } = req.body;
+  if (!model || !message) return res.status(400).json({ error: 'model and message required' });
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const send = (data) => {
+    try { res.write(`data: ${JSON.stringify(data)}\n\n`); } catch {}
+  };
+
+  const AGENT_SYSTEM = systemPrompt || `You are an expert autonomous coding agent. You have access to tools to read files, write files, run commands, and search code. 
+
+When given a task:
+1. First understand the codebase by exploring files
+2. Plan your approach
+3. Execute changes methodically
+4. Verify your work by running relevant commands
+5. Report what you did
+
+Be thorough. Use tools liberally. Don't ask for clarification — make reasonable assumptions and proceed.`;
+
+  try {
+    const ANTHROPIC_MODELS = ['claude-opus-4-6', 'claude-sonnet-4-6', 'claude-sonnet-4-20250514', 'claude-haiku-4-5-20251001'];
+    const GOOGLE_MODELS = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'];
+
+    if (ANTHROPIC_MODELS.includes(model)) {
+      const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      await agentEngine.runAnthropic(client, model, AGENT_SYSTEM, message, send);
+    } else if (GOOGLE_MODELS.includes(model)) {
+      await agentEngine.runGoogle(model, AGENT_SYSTEM, message, send);
+    } else {
+      send({ type: 'error', message: `Model ${model} not supported for agent mode` });
+    }
+  } catch (err) {
+    send({ type: 'error', message: err.message });
+  }
+
+  res.end();
 });

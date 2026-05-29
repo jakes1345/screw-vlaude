@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@google-cloud/vertexai": "^1.12.0",
     "@google/generative-ai": "^0.21.0",
     "chokidar": "^3.6.0",
     "cors": "^2.8.5",
